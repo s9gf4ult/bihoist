@@ -30,6 +30,7 @@ library
                     , GeneralizedNewtypeDeriving
                     , KindSignatures
                     , MultiParamTypeClasses
+                    , PolyKinds
                     , RankNTypes
                     , RecordWildCards
                     , ScopedTypeVariables
