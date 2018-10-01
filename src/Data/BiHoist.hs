@@ -5,8 +5,9 @@ type family Equal (a :: k) (b :: k) :: Bool where
   Equal a b = 'False
 
 class (Equal x y ~ s)
-  => BiHoist s m n x y
-  | x m n -> y, y m n -> x where
+  => BiHoist s m n x y where
+  -- | s x m n -> y, s y m n -> x, x y -> s where
+  -- | x y -> s where
   biHoist :: (forall a. m a -> n a) -> (forall b. n b -> m b) -> x -> y
 
 instance (s ~ Equal (m a) (n a), s ~ 'False) => BiHoist s m n (m a) (n a) where
@@ -15,9 +16,10 @@ instance (s ~ Equal (m a) (n a), s ~ 'False) => BiHoist s m n (m a) (n a) where
 instance (s ~ Equal (n a) (m a), s ~ 'False) => BiHoist s m n (n a) (m a) where
   biHoist _fv bk = bk
 
-instance ( BiHoist (Equal x y) m n x y, BiHoist (Equal b a) m n b a
+instance ( BiHoist s1 m n x y, BiHoist s2 m n b a
+         , s1 ~ Equal x y, s2 ~ Equal b a
          , s ~ 'False, s ~ Equal (a -> x) (b -> y) )
-  => BiHoist 'False  m n (a -> x) (b -> y) where
+  => BiHoist 'False m n (a -> x) (b -> y) where
   biHoist fv bk ax b = biHoist fv bk $ ax (biHoist fv bk b)
 
 instance BiHoist 'True m n a a where
